@@ -2,17 +2,23 @@
 
 namespace Code\QueryBuilder;
 
+use Code\QueryBuilder\Query\QueryInterface;
+
 class Executor {
     private $connection;
+    /**
+     * @var QueryInterface
+     */
     private $query;
     private $params = [];
+    private $result;
 
     public function __construct(\PDO $connection, QueryInterface $query = null){
         $this->connection = $connection;
         $this->query = $query;
     }
 
-    public function setQuery($query){
+    public function setQuery(QueryInterface $query){
         $this->query = $query;
     }
 
@@ -28,14 +34,29 @@ class Executor {
         } catch(\PDOException $e){
             die($e);
         }
+
+        if(count($this->params) > 0)
+            foreach($this->params as $param){
+                $type = gettype($param['value']) == 'integer' ? \PDO::PARAM_INT : \PDO::PARAM_STR;
         
-        foreach($this->params as $param){
-            $type = gettype($param['value']) == 'string' ? \PDO::PARAM_STR : \PDO::PARAM_INT;
-    
-            $proccess->bindValue($param['bind'], $param['value'], $type);
+                $proccess->bindValue($param['bind'], $param['value'], $type);
         }
 
-        $proccess->execute();
-        return $this->connection->lastInsertId();
+        $returnProccess = $proccess->execute();
+        $this->result = $proccess;
+
+        return $returnProccess;
+    }
+
+    public function getResult(){
+        if(!$this->result){
+            return null;
+        }
+
+        try{
+            return $this->result->fetchAll(\PDO::FETCH_ASSOC);
+        } catch(\PDOException $e){
+            die($e);
+        }
     }
 }
