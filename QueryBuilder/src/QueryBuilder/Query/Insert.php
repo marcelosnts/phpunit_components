@@ -2,7 +2,7 @@
 
 namespace Code\QueryBuilder\Query;
 
-class Insert {
+class Insert implements QueryInterface{
     private $sql;
 
     public function __construct(string $table, array $fields = array()){

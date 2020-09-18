@@ -2,7 +2,7 @@
 
 namespace Code\QueryBuilder\Query;
 
-class Select {
+class Select implements QueryInterface{
     private $query;
     private $where;
     private $orderBy;

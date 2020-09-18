@@ -2,7 +2,7 @@
 
 namespace Code\QueryBuilder\Query;
 
-class Delete {
+class Delete implements QueryInterface{
     private $sql;
 
     public function __construct(string $table, $conditions, $logicOperator = ' AND '){
