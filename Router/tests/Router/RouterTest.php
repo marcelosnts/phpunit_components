@@ -72,12 +72,31 @@ class RouterTest extends TestCase{
 
         $router = new Router();
 
-        $router->addRoute('/users/{id}', function(){
-            return 'User 10 data';
+        $router->addRoute('/users/{id}', function($id){
+            return 'User 10 data. Parametro: ' . $id;
         });
 
         $result = $router->run();
 
-        $this->assertEquals('User 10 data', $result); 
+        $this->assertEquals('User 10 data. Parametro: 10', $result); 
+    }
+
+    public function testRouteWithPrefix(){
+        $_SERVER['REQUEST_URI'] = '/users/edit/10';    
+
+        $router = new Router();
+
+        $router->prefix('/users', function(Router $router){
+            $router->addRoute('/edit/{id}', function($id){
+                return 'Prefix route edit and id ' . $id;
+            });
+            $router->addRoute('/update/{id}', function($id){
+                return 'Prefix route update and id ' . $id;
+            });
+        });
+
+        $result = $router->run();
+
+        $this->assertEquals('Prefix route edit and id 10', $result);
     }
 }

@@ -3,6 +3,8 @@
 namespace Code\Router;
 
 class Wildcard {
+    private $parameters = [];
+
     public function resolveRoute($uri, &$routeCollection){
         $keysRouteCollection = array_keys($routeCollection);
         $routeWithParameters = [];
@@ -18,6 +20,7 @@ class Wildcard {
 
             if($routeWithoutParameter === $uriWithoutParameter){
                 $routeCollection[$uri] = $routeCollection[$route];
+                $this->parameters = $this->resolveParameter($uri);
             }
         }
         // if($uri == '/users/10'){
@@ -25,5 +28,16 @@ class Wildcard {
         //         return 'User 10 data';
         //     };
         // }
+    }
+
+    public function getParameters(){
+        return $this->parameters;
+    }
+
+    private function resolveParameter($uri){
+        $matches = [];
+        preg_match('/[0-9]+$/', $uri, $matches);
+
+        return $matches;
     }
 }
